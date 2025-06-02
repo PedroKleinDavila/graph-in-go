@@ -1,5 +1,14 @@
 package graph
 
+type UnweightedGraphInterface interface {
+	BaseGraph
+	IsConnected() bool
+	ShortestPathUnweighted(start, end string) []string
+	ConnectedComponents() [][]string
+	HasCycle() bool
+	ToString() string
+}
+
 type UnweightedGraph struct {
 	adj map[string][]string
 }
@@ -82,21 +91,6 @@ func (g *UnweightedGraph) DFS(start string) []string {
 	return dfs(start, visited, g)
 }
 
-func dfs(node string, visited map[string]bool, g *UnweightedGraph) []string {
-	if visited[node] {
-		return nil
-	}
-	var result []string
-	visited[node] = true
-	result = append(result, node)
-	for _, neighbor := range g.GetNeighbors(node) {
-		if !visited[neighbor] {
-			result = append(result, dfs(neighbor, visited, g)...)
-		}
-	}
-	return result
-}
-
 func (g *UnweightedGraph) IsConnected() bool {
 	nodes := g.GetNodes()
 	if len(nodes) == 0 {
@@ -121,8 +115,9 @@ func (g *UnweightedGraph) ShortestPathUnweighted(start, end string) []string {
 	prev := make(map[string]string)
 	queue := []string{start}
 	visited[start] = true
+	found := false
 
-	for len(queue) > 0 {
+	for len(queue) > 0 && !found {
 		node := queue[0]
 		queue = queue[1:]
 
@@ -131,17 +126,24 @@ func (g *UnweightedGraph) ShortestPathUnweighted(start, end string) []string {
 				visited[neighbor] = true
 				prev[neighbor] = node
 				if neighbor == end {
-					goto BUILD_PATH
+					found = true
+					break
 				}
 				queue = append(queue, neighbor)
 			}
 		}
 	}
 
-BUILD_PATH:
+	if !found {
+		return nil
+	}
+
 	path := []string{}
 	for at := end; at != ""; at = prev[at] {
 		path = append([]string{at}, path...)
+		if at == start {
+			break
+		}
 	}
 
 	if len(path) > 0 && path[0] == start {
@@ -185,20 +187,6 @@ func (g *UnweightedGraph) HasCycle() bool {
 			if hasCycleUtil(node, visited, "", g) {
 				return true
 			}
-		}
-	}
-	return false
-}
-
-func hasCycleUtil(node string, visited map[string]bool, parent string, g *UnweightedGraph) bool {
-	visited[node] = true
-	for _, neighbor := range g.GetNeighbors(node) {
-		if !visited[neighbor] {
-			if hasCycleUtil(neighbor, visited, node, g) {
-				return true
-			}
-		} else if neighbor != parent {
-			return true
 		}
 	}
 	return false

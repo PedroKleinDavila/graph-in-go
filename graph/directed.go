@@ -2,12 +2,9 @@ package graph
 
 type DirectedGraphInterface interface {
 	BaseGraph
-	IsConnected() bool
+	AddEdge(u, v string)
 	ShortestPathUnweighted(start, end string) []string
-	ConnectedComponents() [][]string
 	TopologicalSort() ([]string, bool)
-	HasCycle() bool
-	ToString() string
 }
 
 type DirectedGraph struct {
@@ -202,4 +199,8 @@ func (g *DirectedGraph) ToString() string {
 		result += "\n"
 	}
 	return result
+}
+
+func (g *DirectedGraph) TopologicalSort() ([]string, bool) {
+
 }

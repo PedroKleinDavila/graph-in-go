@@ -1,19 +1,28 @@
 package graph
 
+import "math"
+
 type BaseGraph interface {
-	AddEdge(u, v string)
 	RemoveEdge(u, v string)
 	HasEdge(u, v string) bool
 	GetNeighbors(node string) []string
 	GetNodes() []string
 	BFS(start string) []string
 	DFS(start string) []string
+	IsConnected() bool
+	ConnectedComponents() [][]string
+	HasCycle() bool
+	ToString() string
 }
 
-type Edge struct {
-	From   string
+type WeightedEdge struct {
 	To     string
 	Weight int
+}
+
+type DijkstraResult struct {
+	Path []string
+	Cost int
 }
 
 func dfs(node string, visited map[string]bool, g BaseGraph) []string {
@@ -43,4 +52,16 @@ func hasCycleUtil(node string, visited map[string]bool, parent string, g BaseGra
 		}
 	}
 	return false
+}
+
+func minimumDistance(distances map[string]int, visited map[string]bool, g BaseGraph) string {
+	min := math.MaxInt
+	minNode := ""
+	for _, node := range g.GetNodes() {
+		if visited[node] == false && distances[node] <= min {
+			min = distances[node]
+			minNode = node
+		}
+	}
+	return minNode
 }

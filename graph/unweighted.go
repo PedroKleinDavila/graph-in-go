@@ -2,11 +2,8 @@ package graph
 
 type UnweightedGraphInterface interface {
 	BaseGraph
-	IsConnected() bool
+	AddEdge(u, v string)
 	ShortestPathUnweighted(start, end string) []string
-	ConnectedComponents() [][]string
-	HasCycle() bool
-	ToString() string
 }
 
 type UnweightedGraph struct {

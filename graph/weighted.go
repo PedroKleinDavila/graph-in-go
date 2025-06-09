@@ -238,13 +238,9 @@ func (g *WeightedGraph) Dijkstra(start, end string) DijkstraResult {
 }
 
 func (g *WeightedGraph) FloydWarshall() map[string]map[string]WeightedEdge {
-
-}
-
-func (g *WeightedGraph) TopologicalSort() ([]string, bool) {
-
+	return nil
 }
 
 func (g *WeightedGraph) MinimumSpanningTree() []WeightedEdge {
-
+	return nil
 }

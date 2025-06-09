@@ -179,13 +179,34 @@ func (g *DirectedGraph) ConnectedComponents() [][]string {
 
 func (g *DirectedGraph) HasCycle() bool {
 	visited := make(map[string]bool)
+	recStack := make(map[string]bool)
+
 	for _, node := range g.GetNodes() {
-		if !visited[node] {
-			if hasCycleUtil(node, visited, "", g) {
-				return true
-			}
+		if g.hasCycleUtil(node, visited, recStack) {
+			return true
 		}
 	}
+	return false
+}
+
+func (g *DirectedGraph) hasCycleUtil(node string, visited map[string]bool, recStack map[string]bool) bool {
+	if recStack[node] {
+		return true
+	}
+	if visited[node] {
+		return false
+	}
+
+	visited[node] = true
+	recStack[node] = true
+
+	for _, neighbor := range g.GetNeighbors(node) {
+		if g.hasCycleUtil(neighbor, visited, recStack) {
+			return true
+		}
+	}
+
+	recStack[node] = false
 	return false
 }
 
@@ -202,5 +223,29 @@ func (g *DirectedGraph) ToString() string {
 }
 
 func (g *DirectedGraph) TopologicalSort() ([]string, bool) {
+	if g.HasCycle() {
+		return nil, false
+	}
 
+	visited := make(map[string]bool)
+	stack := []string{}
+
+	var dfsTopo func(string)
+	dfsTopo = func(node string) {
+		visited[node] = true
+		for _, neighbor := range g.GetNeighbors(node) {
+			if !visited[neighbor] {
+				dfsTopo(neighbor)
+			}
+		}
+		stack = append([]string{node}, stack...)
+	}
+
+	for _, node := range g.GetNodes() {
+		if !visited[node] {
+			dfsTopo(node)
+		}
+	}
+
+	return stack, true
 }
